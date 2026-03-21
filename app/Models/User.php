@@ -6,12 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-/**
- * @property string $role
- * @method bool isExpert()
- * @method bool isAdmin()
- * @method bool isUser()
- */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -65,5 +59,11 @@ class User extends Authenticatable
     public function isUser(): bool
     {
         return $this->role === 'user';
+    }
+
+    // Связь с заданиями
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
     }
 }
