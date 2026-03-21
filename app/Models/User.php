@@ -14,6 +14,18 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+    public function isExpert()
+    {
+        return $this->role === 'expert';
+    }
+    public function isUser()
+    {
+        return $this->role === 'user';
+    }
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
