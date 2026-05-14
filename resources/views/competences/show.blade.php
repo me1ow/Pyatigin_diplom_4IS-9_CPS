@@ -12,7 +12,7 @@
                 <div class="space-y-4">
                     @foreach($competence->courses as $course)
                         <div class="border rounded-lg p-4">
-                            <a href="{{ route('course.show', $course) }}" class="text-lg font-medium text-indigo-600 hover:underline">
+                            <a href="{{ route('courses.show', $course) }}" class="text-lg font-medium text-indigo-600 hover:underline">
                                 {{ $course->title }}
                             </a>
                         </div>

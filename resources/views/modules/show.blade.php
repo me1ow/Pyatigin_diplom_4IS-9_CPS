@@ -6,9 +6,9 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900">
                 <nav class="mb-4 text-sm text-gray-500">
-                    <a href="{{ route('home') }}" class="hover:text-gray-700">Главная</a> &gt;
-                    <a href="{{ route('competence.show', $module->course->competence->slug) }}" class="hover:text-gray-700">{{ $module->course->competence->title }}</a> &gt;
-                    <a href="{{ route('course.show', $module->course) }}" class="hover:text-gray-700">{{ $module->course->title }}</a> &gt;
+                    <a href="{{ route('home') }}" class="hover:text-gray-700">Главная</a> >
+                    <a href="{{ route('competences.show', $module->course->competence) }}" class="hover:text-gray-700">{{ $module->course->competence->title }}</a> >
+                    <a href="{{ route('courses.show', $module->course) }}" class="hover:text-gray-700">{{ $module->course->title }}</a> >
                     <span class="text-gray-700">{{ $module->title }}</span>
                 </nav>
 
@@ -43,7 +43,7 @@
                     @else
                         <div class="mt-8 p-4 bg-gray-50 rounded-lg">
                             <h3 class="text-lg font-medium">Сдать задание</h3>
-                            <form method="POST" action="{{ route('submission.store', $module) }}" enctype="multipart/form-data">
+                            <form method="POST" action="{{ route('submissions.store', $module) }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700">Файл (ZIP, MP4, MOV, AVI) до 200 МБ</label>

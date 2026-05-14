@@ -19,9 +19,9 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Дашборд
+    // Дашборд → редирект на профиль (объединены)
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return redirect()->route('profile.edit');
     })->name('dashboard');
 
     // Профиль
