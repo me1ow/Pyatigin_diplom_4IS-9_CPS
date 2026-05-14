@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,8 +17,16 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $currentUser = $request->user();
+
+        // Администратору передаём список всех пользователей для имперсонации
+        $users = $currentUser->isAdmin()
+            ? User::where('id', '!=', $currentUser->id)->orderBy('name')->get()
+            : collect();
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $currentUser,
+            'users' => $users,
         ]);
     }
 

@@ -1,29 +1,59 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CompetenceController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\SubmissionController;
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\UserController;
 
-Route::get('/', [CompetenceController::class, 'index'])->name('home');
+// ========== Публичные маршруты ==========
 
-Route::get('/competence/{competence:slug}', [CompetenceController::class, 'show'])->name('competence.show');
-Route::get('/course/{course}', [CourseController::class, 'show'])->name('course.show');
-Route::get('/module/{module}', [ModuleController::class, 'show'])->name('module.show');
+// Корневая страница (гостевая / лендинг)
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// ========== Аутентифицированные маршруты ==========
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
+
+    // Дашборд
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    // Профиль
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/module/{module}/submit', [SubmissionController::class, 'store'])->name('submission.store');
-    Route::get('/my-submissions', [SubmissionController::class, 'index'])->name('submissions.index');
+
+    // Компетенции
+    Route::get('/competences', [CompetenceController::class, 'index'])->name('competences.index');
+    Route::get('/competences/{competence}', [CompetenceController::class, 'show'])->name('competences.show');
+
+    // Рекомендации курсов (должен быть ДО /courses/{course}, иначе «recommendations» захватится как {course})
+    Route::get('/courses/recommendations', [CourseController::class, 'recommendations'])->name('courses.recommendations');
+    // Курсы
+    Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
+
+    // Модули
+    Route::get('/modules/{module}', [ModuleController::class, 'show'])->name('modules.show');
+
+    // Отправка заданий
+    Route::post('/modules/{module}/submit', [SubmissionController::class, 'store'])->name('submissions.store');
+    Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
 });
 
+// ========== Имперсонация (только для администраторов) ==========
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::post('/impersonate/{user}', [UserController::class, 'impersonate'])
+        ->name('impersonate');
+    Route::post('/stop-impersonate', [UserController::class, 'stopImpersonate'])
+        ->name('stop.impersonate');
+});
+
+// ========== Аутентификация (Breeze) ==========
 require __DIR__.'/auth.php';
