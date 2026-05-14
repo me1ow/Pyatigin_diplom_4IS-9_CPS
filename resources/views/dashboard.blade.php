@@ -30,18 +30,15 @@
                     <h3 class="text-lg font-semibold mb-4">{{ __('📚 Рекомендованные курсы') }}</h3>
 
                     @php
-                        use App\Models\UserProgress;
-                        use App\Models\Course;
-
                         $user = Auth::user();
-                        $startedCourseIds = UserProgress::where('user_id', $user->id)
+                        $startedCourseIds = \App\Models\UserProgress::where('user_id', $user->id)
                             ->whereHas('lesson.module.course')
                             ->get()
                             ->pluck('lesson.module.course.id')
                             ->unique()
                             ->values();
 
-                        $recommendedCourses = Course::with('competence')
+                        $recommendedCourses = \App\Models\Course::with('competence')
                             ->when($startedCourseIds->isNotEmpty(), function ($query) use ($startedCourseIds) {
                                 $query->whereNotIn('id', $startedCourseIds);
                             })
