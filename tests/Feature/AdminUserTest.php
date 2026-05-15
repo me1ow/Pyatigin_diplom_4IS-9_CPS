@@ -87,6 +87,25 @@ class AdminUserTest extends TestCase
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
     }
 
+    public function test_admin_can_change_user_role_inline(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+
+        $response = $this
+            ->actingAs($this->admin)
+            ->patchJson("/admin/users/{$user->id}/role", [
+                'role' => 'expert',
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('message', 'Роль пользователя обновлена.');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'role' => 'expert',
+        ]);
+    }
+
     public function test_admin_cannot_delete_self(): void
     {
         $response = $this

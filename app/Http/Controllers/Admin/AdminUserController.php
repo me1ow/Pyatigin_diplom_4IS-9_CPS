@@ -33,9 +33,38 @@ class AdminUserController extends Controller
             $query->where('role', $role);
         }
 
-        $users = $query->orderBy('created_at', 'desc')->paginate(15);
+        // Сортировка
+        $sort = $request->input('sort', 'created_at');
+        $direction = $request->input('direction', 'desc');
+        $allowedSorts = ['name', 'email', 'role', 'created_at'];
+        $sort = in_array($sort, $allowedSorts) ? $sort : 'created_at';
+        $direction = in_array($direction, ['asc', 'desc']) ? $direction : 'desc';
+
+        $users = $query->orderBy($sort, $direction)->paginate(15);
 
         return response()->json($users);
+    }
+
+    /**
+     * Быстрая смена роли пользователя (inline, AJAX).
+     */
+    public function updateRole(Request $request, User $user): JsonResponse
+    {
+        $validated = $request->validate([
+            'role' => ['required', 'string', Rule::in(['user', 'expert', 'admin'])],
+        ]);
+
+        // Запрещаем менять роль самому себе
+        if ($user->id === Auth::id()) {
+            return response()->json(['message' => 'Нельзя изменить свою роль.'], 422);
+        }
+
+        $user->update(['role' => $validated['role']]);
+
+        return response()->json([
+            'message' => 'Роль пользователя обновлена.',
+            'user' => $user->fresh(),
+        ]);
     }
 
     /**
