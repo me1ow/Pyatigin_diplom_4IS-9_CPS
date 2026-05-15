@@ -89,7 +89,7 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 <template x-for="user in users" :key="user.id">
-                    <tr class="hover:bg-gray-50 transition">
+                    <tr :class="user.is_blocked ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50'" class="transition">
                         {{-- Аватар --}}
                         <td class="px-4 py-3 whitespace-nowrap">
                             <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
@@ -114,6 +114,14 @@
                                 <option value="expert" :selected="user.role === 'expert'">{{ __('Эксперт') }}</option>
                                 <option value="admin" :selected="user.role === 'admin'">{{ __('Админ') }}</option>
                             </select>
+                        </td>
+                        {{-- Статус --}}
+                        <td class="px-4 py-3 whitespace-nowrap">
+                            <button @@click="toggleBlock(user)" :disabled="user.id === {{ auth()->id() }}"
+                                class="text-xs font-medium px-2 py-1 rounded transition"
+                                :class="user.is_blocked ? 'bg-red-100 text-red-800 hover:bg-red-200' : 'bg-green-100 text-green-800 hover:bg-green-200'"
+                                x-text="user.is_blocked ? '{{ __('Заблокирован') }}' : '{{ __('Активен') }}'">
+                            </button>
                         </td>
                         {{-- Дата регистрации --}}
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500" x-text="formatDate(user.created_at)"></td>
@@ -272,6 +280,7 @@
         urlStore: '{{ route('admin.users.store') }}',
         urlUpdate: '{{ route('admin.users.update', ['user' => '__ID__']) }}',
         urlRole: '{{ route('admin.users.role', ['user' => '__ID__']) }}',
+        urlBlock: '{{ route('admin.users.block', ['user' => '__ID__']) }}',
         urlDestroy: '{{ route('admin.users.destroy', ['user' => '__ID__']) }}',
         csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
     };
@@ -350,6 +359,23 @@
                 } catch (e) {
                     this.error = e.message;
                     await this.fetchUsers(); // откатываем визуально
+                }
+            },
+
+            // ===== Блокировка =====
+            async toggleBlock(user) {
+                try {
+                    const res = await fetch(window.AppUsers.urlBlock.replace('__ID__', user.id), {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': window.AppUsers.csrfToken },
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || 'Ошибка блокировки.');
+                    this.flashMessage = data.message;
+                    await this.fetchUsers();
+                } catch (e) {
+                    this.error = e.message;
+                    await this.fetchUsers();
                 }
             },
 

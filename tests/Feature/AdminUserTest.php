@@ -106,6 +106,27 @@ class AdminUserTest extends TestCase
         ]);
     }
 
+    public function test_admin_can_toggle_user_block(): void
+    {
+        $user = User::factory()->create(['is_blocked' => false]);
+
+        // Заблокировать
+        $response = $this
+            ->actingAs($this->admin)
+            ->patchJson("/admin/users/{$user->id}/block");
+
+        $response->assertOk();
+        $this->assertDatabaseHas('users', ['id' => $user->id, 'is_blocked' => true]);
+
+        // Разблокировать
+        $response = $this
+            ->actingAs($this->admin)
+            ->patchJson("/admin/users/{$user->id}/block");
+
+        $response->assertOk();
+        $this->assertDatabaseHas('users', ['id' => $user->id, 'is_blocked' => false]);
+    }
+
     public function test_admin_cannot_delete_self(): void
     {
         $response = $this

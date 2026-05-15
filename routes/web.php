@@ -64,6 +64,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/users/{user}', [AdminUserController::class, 'show'])->name('admin.users.show');
     Route::put('/admin/users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');
     Route::patch('/admin/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('admin.users.role');
+    Route::patch('/admin/users/{user}/block', [AdminUserController::class, 'toggleBlock'])->name('admin.users.block');
     Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
 });
 

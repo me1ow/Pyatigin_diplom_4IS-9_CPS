@@ -46,6 +46,23 @@ class AdminUserController extends Controller
     }
 
     /**
+     * Блокировка / разблокировка пользователя (inline, AJAX).
+     */
+    public function toggleBlock(User $user): JsonResponse
+    {
+        if ($user->id === Auth::id()) {
+            return response()->json(['message' => 'Нельзя заблокировать самого себя.'], 422);
+        }
+
+        $user->update(['is_blocked' => !$user->is_blocked]);
+
+        return response()->json([
+            'message' => $user->is_blocked ? 'Пользователь заблокирован.' : 'Пользователь разблокирован.',
+            'user' => $user->fresh(),
+        ]);
+    }
+
+    /**
      * Быстрая смена роли пользователя (inline, AJAX).
      */
     public function updateRole(Request $request, User $user): JsonResponse
