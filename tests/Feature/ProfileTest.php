@@ -96,4 +96,70 @@ class ProfileTest extends TestCase
 
         $this->assertNotNull($user->fresh());
     }
+
+    public function test_user_can_change_password(): void
+    {
+        $user = User::factory()->create([
+            'password' => bcrypt('old-password'),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from('/profile')
+            ->put('/profile/password', [
+                'current_password' => 'old-password',
+                'password' => 'new-strong-password',
+                'password_confirmation' => 'new-strong-password',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        // Проверяем, что пароль действительно изменился
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('new-strong-password', $user->fresh()->password));
+    }
+
+    public function test_cannot_change_password_with_wrong_current_password(): void
+    {
+        $user = User::factory()->create([
+            'password' => bcrypt('correct-password'),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from('/profile')
+            ->put('/profile/password', [
+                'current_password' => 'wrong-password',
+                'password' => 'new-password',
+                'password_confirmation' => 'new-password',
+            ]);
+
+        $response
+            ->assertSessionHasErrorsIn('updatePassword', 'current_password');
+    }
+
+    public function test_profile_edit_shows_admin_users_tab_for_admin(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this
+            ->actingAs($admin)
+            ->get('/profile');
+
+        $response->assertOk();
+        $response->assertSee('Управление пользователями');
+    }
+
+    public function test_profile_edit_hides_admin_users_tab_for_regular_user(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+
+        $response = $this
+            ->actingAs($user)
+            ->get('/profile');
+
+        $response->assertOk();
+        $response->assertDontSee('Управление пользователями');
+    }
 }

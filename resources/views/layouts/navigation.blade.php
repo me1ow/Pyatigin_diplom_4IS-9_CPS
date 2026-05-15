@@ -92,6 +92,13 @@
                                 {{ __('Профиль') }}
                             </x-dropdown-link>
 
+                            {{-- Управление пользователями (только для админа) --}}
+                            @if(Auth::user()->isAdmin())
+                                <x-dropdown-link :href="route('profile.edit') . '#users'">
+                                    {{ __('Управление пользователями') }}
+                                </x-dropdown-link>
+                            @endif
+
                             {{-- Разделитель --}}
                             <div class="border-t border-gray-200"></div>
 

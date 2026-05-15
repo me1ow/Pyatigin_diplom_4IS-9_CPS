@@ -28,4 +28,19 @@ class ProfileUpdateRequest extends FormRequest
             ],
         ];
     }
+
+    /**
+     * Локализованные сообщения об ошибках.
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Имя обязательно для заполнения.',
+            'name.max' => 'Имя не должно превышать 255 символов.',
+            'email.required' => 'Email обязателен для заполнения.',
+            'email.email' => 'Введите корректный email адрес.',
+            'email.unique' => 'Пользователь с таким email уже существует.',
+            'email.max' => 'Email не должен превышать 255 символов.',
+        ];
+    }
 }

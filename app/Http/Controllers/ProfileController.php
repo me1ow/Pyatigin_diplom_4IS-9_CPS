@@ -7,47 +7,88 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Отображение страницы профиля с вкладками.
+     * Для администратора добавляются данные для управления пользователями.
      */
     public function edit(Request $request): View
     {
         $currentUser = $request->user();
 
         // Администратору передаём список всех пользователей для имперсонации
-        $users = $currentUser->isAdmin()
+        $impersonatableUsers = $currentUser->isAdmin()
             ? User::where('id', '!=', $currentUser->id)->orderBy('name')->get()
+            : collect();
+
+        // Для вкладки «Управление пользователями» админу отдаём всех, кроме себя
+        $allUsers = $currentUser->isAdmin()
+            ? User::where('id', '!=', $currentUser->id)
+                ->orderBy('created_at', 'desc')
+                ->get()
             : collect();
 
         return view('profile.edit', [
             'user' => $currentUser,
-            'users' => $users,
+            'impersonatableUsers' => $impersonatableUsers,
+            'allUsers' => $allUsers,
         ]);
     }
 
     /**
-     * Update the user's profile information.
+     * Обновление профиля (имя, email).
+     * При смене email сбрасывается верификация и отправляется новое письмо.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $oldEmail = $user->email;
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user->fill($request->validated());
+
+        $emailChanged = $user->isDirty('email');
+
+        if ($emailChanged) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
+
+        // Отправляем повторное письмо для верификации, если email изменился
+        if ($emailChanged) {
+            $user->sendEmailVerificationNotification();
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**
-     * Delete the user's account.
+     * Смена пароля текущим пользователем.
+     * Требует текущий пароль для подтверждения.
+     */
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $validated = $request->validateWithBag('updatePassword', [
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return Redirect::route('profile.edit')->with('status', 'password-updated');
+    }
+
+    /**
+     * Удаление аккаунта текущим пользователем.
+     * Требует подтверждения текущим паролем.
      */
     public function destroy(Request $request): RedirectResponse
     {
