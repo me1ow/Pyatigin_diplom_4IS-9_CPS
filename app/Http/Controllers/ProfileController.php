@@ -68,10 +68,7 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-    /**
-     * Смена пароля текущим пользователем.
-     * Требует текущий пароль для подтверждения.
-     */
+    /** Смена пароля текущим пользователем. Требует текущий пароль для подтверждения. */
     public function updatePassword(Request $request): RedirectResponse
     {
         $validated = $request->validateWithBag('updatePassword', [
@@ -86,10 +83,7 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('status', 'password-updated');
     }
 
-    /**
-     * Удаление аккаунта текущим пользователем.
-     * Требует подтверждения текущим паролем.
-     */
+    /** Удаление аккаунта текущим пользователем. Требует подтверждения текущим паролем. */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [

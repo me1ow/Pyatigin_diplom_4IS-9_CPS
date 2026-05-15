@@ -113,8 +113,8 @@
     function profileInfoForm() {
         return {
             form: {
-                name: '{{ old('name', $user->name) }}',
-                email: '{{ old('email', $user->email) }}',
+                name: '{{ old('name', Auth::user()->name) }}',
+                email: '{{ old('email', Auth::user()->email) }}',
             },
             errors: {},
             isSubmitting: false,

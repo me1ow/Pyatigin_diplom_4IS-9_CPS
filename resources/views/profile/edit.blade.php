@@ -116,7 +116,7 @@
     <script>
         function profileTabs() {
             return {
-                activeTab: '{{ old('tab', request()->has('tab') ? request()->get('tab') : (request()->getRequestUri() === route('profile.edit') . '#users' ? 'users' : 'info')) }}',
+                activeTab: '{{ old('tab', request()->has('tab') ? request()->input('tab') : (request()->getRequestUri() === route('profile.edit') . '#users' ? 'users' : 'info')) }}',
 
                 init() {
                     // Обработка хеш-навигации

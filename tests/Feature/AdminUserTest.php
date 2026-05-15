@@ -99,6 +99,7 @@ class AdminUserTest extends TestCase
 
     public function test_non_admin_cannot_access_user_management(): void
     {
+        /** @var User $user */
         $user = User::factory()->create(['role' => 'user']);
 
         $response = $this
