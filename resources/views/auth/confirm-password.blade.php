@@ -1,9 +1,9 @@
 <x-guest-layout>
     <div class="mb-4 text-sm text-gray-600">
-        {{ __('Это защищённая область приложения. Пожалуйста, подтвердите свой пароль, прежде чем продолжить.') }}
+        {{ __('Это защищённая область. Пожалуйста, подтвердите ваш пароль для продолжения.') }}
     </div>
 
-    <form method="POST" action="{{ route('password.confirm') }}">
+    <form method="POST" action="{{ route('password.confirm') }}" autocomplete="off">
         @csrf
 
         {{-- Пароль --}}
@@ -12,7 +12,7 @@
             <x-text-input id="password" class="block mt-1 w-full"
                             type="password"
                             name="password"
-                            required autocomplete="current-password" />
+                            required autocomplete="off" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 

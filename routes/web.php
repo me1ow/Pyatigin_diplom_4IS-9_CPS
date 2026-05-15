@@ -17,7 +17,7 @@ Route::get('/', function () {
 
 // ========== Аутентифицированные маршруты ==========
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     // Дашборд → редирект на профиль (объединены)
     Route::get('/dashboard', function () {
