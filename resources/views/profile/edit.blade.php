@@ -1,18 +1,20 @@
-<x-app-layout>
-    <x-slot name="header">
-        {{-- Хлебные крошки + заголовок --}}
-        <nav class="flex items-center space-x-2 text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
-            <a href="{{ route('home') }}" class="hover:text-gray-700 transition">{{ __('Главная') }}</a>
-            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-            <span class="text-gray-900 font-medium">{{ __('Профиль') }}</span>
-        </nav>
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Профиль') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
+@section('header')
+    {{-- Хлебные крошки + заголовок --}}
+    <nav class="flex items-center space-x-2 text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
+        <a href="{{ route('home') }}" class="hover:text-gray-700 transition">{{ __('Главная') }}</a>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        <span class="text-gray-900 font-medium">{{ __('Профиль') }}</span>
+    </nav>
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        {{ __('Профиль') }}
+    </h2>
+@endsection
+
+@section('content')
     <div class="py-12" x-data="profileTabs()">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
@@ -96,19 +98,16 @@
 
                 {{-- Содержимое вкладок --}}
                 <div class="p-6 sm:p-8">
-                    {{-- Вкладка: Профиль (витрина + модальное редактирование) --}}
                     <div x-show="activeTab === 'info'" x-cloak>
                         @include('profile.partials.profile-info-card')
                     </div>
 
-                    {{-- Вкладка: Безопасность --}}
                     <div x-show="activeTab === 'security'" x-cloak>
                         @include('profile.partials.update-password-form')
                         <hr class="my-8 border-gray-200">
                         @include('profile.partials.delete-user-form')
                     </div>
 
-                    {{-- Вкладка: Пользователи (только админ) --}}
                     @if($user->isAdmin())
                         <div x-show="activeTab === 'users'" x-cloak id="users">
                             @include('profile.admin.users-table')
@@ -118,30 +117,30 @@
             </div>
         </div>
     </div>
+@endsection
 
-    @push('scripts')
-    <script>
-        function profileTabs() {
-            return {
-                activeTab: '{{ request()->has('tab') ? request()->input('tab') : (str_contains(request()->getRequestUri(), '#users') ? 'users' : 'info') }}',
+@push('scripts')
+<script>
+    function profileTabs() {
+        return {
+            activeTab: '{{ request()->has('tab') ? request()->input('tab') : (str_contains(request()->getRequestUri(), '#users') ? 'users' : 'info') }}',
 
-                init() {
-                    const hash = window.location.hash;
-                    if (hash === '#users' && {{ $user->isAdmin() ? 'true' : 'false' }}) {
-                        this.activeTab = 'users';
-                    } else if (hash === '#security') {
-                        this.activeTab = 'security';
-                    }
-
-                    window.addEventListener('hashchange', () => {
-                        const h = window.location.hash;
-                        if (h === '#users' && {{ $user->isAdmin() ? 'true' : 'false' }}) this.activeTab = 'users';
-                        else if (h === '#security') this.activeTab = 'security';
-                        else if (h === '#info') this.activeTab = 'info';
-                    });
+            init() {
+                const hash = window.location.hash;
+                if (hash === '#users' && {{ $user->isAdmin() ? 'true' : 'false' }}) {
+                    this.activeTab = 'users';
+                } else if (hash === '#security') {
+                    this.activeTab = 'security';
                 }
-            };
-        }
-    </script>
-    @endpush
-</x-app-layout>
+
+                window.addEventListener('hashchange', () => {
+                    const h = window.location.hash;
+                    if (h === '#users' && {{ $user->isAdmin() ? 'true' : 'false' }}) this.activeTab = 'users';
+                    else if (h === '#security') this.activeTab = 'security';
+                    else if (h === '#info') this.activeTab = 'info';
+                });
+            }
+        };
+    }
+</script>
+@endpush
