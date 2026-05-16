@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Module;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class ModuleController extends Controller
@@ -18,9 +19,9 @@ class ModuleController extends Controller
 
         // Текущая отправка пользователя (если авторизован)
         $userSubmission = null;
-        if (auth()->check()) {
+        if (Auth::check()) {
             $userSubmission = $module->submissions()
-                ->where('user_id', auth()->id())
+                ->where('user_id', Auth::id())
                 ->first();
         }
 

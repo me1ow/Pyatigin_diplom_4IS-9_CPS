@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Module;
 use App\Models\Submission;
+use App\Models\User;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -34,7 +36,9 @@ class SubmissionController extends Controller
 
     public function index()
     {
-        $submissions = Auth::user()->submissions()->with('module.competence')->latest()->get();
+        /** @var User $user */
+        $user = Auth::user();
+        $submissions = $user->submissions()->with('module.competence')->latest()->get();
         return view('submissions.index', compact('submissions'));
     }
 
@@ -46,10 +50,13 @@ class SubmissionController extends Controller
         // Извлекаем относительный путь из file_url (например, "/storage/submissions/xxx.zip" → "submissions/xxx.zip")
         $relativePath = preg_replace('#^/storage/#', '', $submission->file_url);
 
-        if (!Storage::disk('public')->exists($relativePath)) {
+        /** @var FilesystemAdapter $disk */
+        $disk = Storage::disk('public');
+
+        if (!$disk->exists($relativePath)) {
             abort(404, 'Файл не найден.');
         }
 
-        return Storage::disk('public')->download($relativePath);
+        return $disk->download($relativePath);
     }
 }

@@ -13,7 +13,7 @@ return new class extends Migration
      * - Добавляет прямую связь с competences (competence_id)
      * - Добавляет slug для маршрутизации по имени
      * - Добавляет description для карточек модулей
-     * - Переносит существующие данные из связи course → competence
+     * - Переносит существующие данные из связи course -> competence
      * - Удаляет столбец course_id
      */
     public function up(): void
