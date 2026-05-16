@@ -6,6 +6,8 @@ use App\Http\Controllers\CompetenceController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\ExpertSubmissionController;
+use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\AdminUserController;
 
@@ -31,7 +33,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Компетенции
+    // Компетенции (все роли)
     Route::get('/competences', [CompetenceController::class, 'index'])->name('competences.index');
     Route::get('/competences/{competence}', [CompetenceController::class, 'show'])->name('competences.show');
 
@@ -43,9 +45,20 @@ Route::middleware(['auth'])->group(function () {
     // Модули
     Route::get('/modules/{module}', [ModuleController::class, 'show'])->name('modules.show');
 
-    // Отправка заданий
-    Route::post('/modules/{module}/submit', [SubmissionController::class, 'store'])->name('submissions.store');
-    Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
+    // Отправка заданий (user + admin)
+    Route::middleware(['can:submission-manage'])->group(function () {
+        Route::post('/modules/{module}/submit', [SubmissionController::class, 'store'])->name('submissions.store');
+        Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
+    });
+});
+
+// ========== Маршруты эксперта (expert + admin) ==========
+
+Route::middleware(['auth', 'expert'])->prefix('expert')->name('expert.')->group(function () {
+    Route::get('/submissions', [ExpertSubmissionController::class, 'index'])
+        ->name('submissions.index');
+    Route::put('/submissions/{submission}', [ExpertSubmissionController::class, 'update'])
+        ->name('submissions.update');
 });
 
 // ========== Административные маршруты ==========
@@ -66,6 +79,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/admin/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('admin.users.role');
     Route::patch('/admin/users/{user}/block', [AdminUserController::class, 'toggleBlock'])->name('admin.users.block');
     Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+
+    // Документация (только admin)
+    Route::get('/documentation', [DocumentationController::class, 'index'])->name('documentation.index');
+    Route::get('/documentation/{document}/download', [DocumentationController::class, 'download'])
+        ->name('documentation.download');
+    Route::get('/documentation/{document}/view', [DocumentationController::class, 'view'])
+        ->name('documentation.view');
 });
 
 // ========== Аутентификация (Breeze) ==========

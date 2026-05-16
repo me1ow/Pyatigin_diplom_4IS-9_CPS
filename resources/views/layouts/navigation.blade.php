@@ -28,31 +28,50 @@
         @endif
     @endauth
 
-    <!-- Основное содержимое навигации -->
+    {{-- Основное содержимое навигации --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
-                <!-- Логотип -->
+                {{-- Логотип — ссылка на главную --}}
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('competences.index') }}" class="flex items-center">
+                    <a href="{{ route('home') }}" class="flex items-center">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                         <span class="ml-2 text-lg font-semibold text-gray-800 hidden sm:block">{{ __('Профессионалы') }}</span>
                     </a>
                 </div>
 
-                <!-- Основные ссылки (только для авторизованных) -->
+                {{-- Основные ссылки (только для авторизованных) --}}
                 @auth
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        {{-- Компетенции (все роли) --}}
                         <x-nav-link :href="route('competences.index')" :active="request()->routeIs('competences.*')">
                             {{ __('Компетенции') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('submissions.index')" :active="request()->routeIs('submissions.*')">
-                            {{ __('Мои задания') }}
-                        </x-nav-link>
+
+                        {{-- Мои задания (user, admin) --}}
+                        @if(Auth::user()->isUser() || Auth::user()->isAdmin())
+                            <x-nav-link :href="route('submissions.index')" :active="request()->routeIs('submissions.*')">
+                                {{ __('Мои задания') }}
+                            </x-nav-link>
+                        @endif
+
+                        {{-- Проверка заданий (expert, admin) --}}
+                        @if(Auth::user()->isExpert() || Auth::user()->isAdmin())
+                            <x-nav-link :href="route('expert.submissions.index')" :active="request()->routeIs('expert.submissions.*')">
+                                {{ __('Проверка заданий') }}
+                            </x-nav-link>
+                        @endif
+
+                        {{-- Документы (только admin) --}}
+                        @if(Auth::user()->isAdmin())
+                            <x-nav-link :href="route('documentation.index')" :active="request()->routeIs('documentation.*')">
+                                {{ __('Документы') }}
+                            </x-nav-link>
+                        @endif
                     </div>
                 @endauth
 
-                <!-- Ссылки для гостей -->
+                {{-- Ссылки для гостей --}}
                 @guest
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <a href="{{ route('login') }}" class="inline-flex items-center px-1 pt-1 text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 transition">
@@ -65,7 +84,7 @@
                 @endguest
             </div>
 
-            <!-- Выпадающее меню пользователя (только для авторизованных) -->
+            {{-- Выпадающее меню пользователя (только для авторизованных) --}}
             @auth
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <x-dropdown align="right" width="48">
@@ -102,7 +121,7 @@
                             {{-- Разделитель --}}
                             <div class="border-t border-gray-200"></div>
 
-                            <!-- Выход -->
+                            {{-- Выход --}}
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <x-dropdown-link :href="route('logout')"
@@ -116,7 +135,7 @@
                 </div>
             @endauth
 
-            <!-- Кнопка бургер-меню (мобильная версия) -->
+            {{-- Кнопка бургер-меню (мобильная версия) --}}
             <div class="-me-2 flex items-center sm:hidden">
                 <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -128,20 +147,39 @@
         </div>
     </div>
 
-    <!-- Мобильное меню -->
+    {{-- Мобильное меню --}}
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         @auth
-            <!-- Основные ссылки -->
+            {{-- Основные ссылки --}}
             <div class="pt-2 pb-3 space-y-1">
+                {{-- Компетенции (все роли) --}}
                 <x-responsive-nav-link :href="route('competences.index')" :active="request()->routeIs('competences.*')">
                     {{ __('Компетенции') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('submissions.index')" :active="request()->routeIs('submissions.*')">
-                    {{ __('Мои задания') }}
-                </x-responsive-nav-link>
+
+                {{-- Мои задания (user, admin) --}}
+                @if(Auth::user()->isUser() || Auth::user()->isAdmin())
+                    <x-responsive-nav-link :href="route('submissions.index')" :active="request()->routeIs('submissions.*')">
+                        {{ __('Мои задания') }}
+                    </x-responsive-nav-link>
+                @endif
+
+                {{-- Проверка заданий (expert, admin) --}}
+                @if(Auth::user()->isExpert() || Auth::user()->isAdmin())
+                    <x-responsive-nav-link :href="route('expert.submissions.index')" :active="request()->routeIs('expert.submissions.*')">
+                        {{ __('Проверка заданий') }}
+                    </x-responsive-nav-link>
+                @endif
+
+                {{-- Документы (только admin) --}}
+                @if(Auth::user()->isAdmin())
+                    <x-responsive-nav-link :href="route('documentation.index')" :active="request()->routeIs('documentation.*')">
+                        {{ __('Документы') }}
+                    </x-responsive-nav-link>
+                @endif
             </div>
 
-            <!-- Информация о пользователе -->
+            {{-- Информация о пользователе --}}
             <div class="pt-4 pb-1 border-t border-gray-200">
                 <div class="px-4">
                     <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
@@ -159,7 +197,7 @@
                         {{ __('Профиль') }}
                     </x-responsive-nav-link>
 
-                    <!-- Выход -->
+                    {{-- Выход --}}
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <x-responsive-nav-link :href="route('logout')"
@@ -170,10 +208,10 @@
                     </form>
                 </div>
             </div>
-        @endguest
+        @endauth
 
         @guest
-            <!-- Ссылки для гостей -->
+            {{-- Ссылки для гостей --}}
             <div class="pt-2 pb-3 space-y-1">
                 <x-responsive-nav-link :href="route('login')">
                     {{ __('Войти') }}

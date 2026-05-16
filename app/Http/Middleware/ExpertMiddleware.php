@@ -11,10 +11,10 @@ class ExpertMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && Auth::user()->role === 'expert') {
+        if (Auth::check() && in_array(Auth::user()->role, ['expert', 'admin'])) {
             return $next($request);
         }
         
-        abort(403, 'Доступ запрещён. Требуются права эксперта.');
+        abort(403, 'Доступ запрещён. Требуются права эксперта или администратора.');
     }
 }
