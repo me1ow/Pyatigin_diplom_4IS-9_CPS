@@ -58,6 +58,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/documentation/{document}/view', [DocumentationController::class, 'view'])
         ->name('documentation.view');
 
+    // Предпросмотр офисных документов (DOCX/XLSX) через Office Web Viewer (все роли)
+    Route::get('/documentation/{document}/preview', [DocumentationController::class, 'preview'])
+        ->name('documentation.preview');
+
     // Загрузка и удаление документов (admin + expert)
     Route::post('/documentation', [DocumentationController::class, 'store'])
         ->middleware('can:document-manage')
@@ -66,6 +70,12 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('can:document-manage')
         ->name('documentation.destroy');
 });
+
+// ========== Signed-маршруты (без auth, только временная подпись) ==========
+
+// Отдача файла для Office Web Viewer — доступ по временной signed-ссылке
+Route::get('/documentation/serve/{document}', [DocumentationController::class, 'serve'])
+    ->name('documentation.serve');
 
 // ========== Маршруты эксперта (expert + admin) ==========
 

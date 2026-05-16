@@ -40,6 +40,25 @@ class Document extends Model
     }
 
     /**
+     * Является ли документ офисным (DOCX/XLSX) — поддерживает inline-просмотр.
+     */
+    public function isOfficeDocument(): bool
+    {
+        return in_array($this->mime_type, [
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    /**
+     * Можно ли открыть документ для inline-просмотра (PDF + офисные).
+     */
+    public function isPreviewable(): bool
+    {
+        return $this->isPdf() || $this->isOfficeDocument();
+    }
+
+    /**
      * Возвращает расширение файла в нижнем регистре.
      */
     public function extension(): string

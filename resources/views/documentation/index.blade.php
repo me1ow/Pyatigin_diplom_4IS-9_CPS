@@ -115,11 +115,22 @@
                                                    class="text-xs font-medium text-indigo-600 hover:text-indigo-800 transition">
                                                     {{ __('Скачать') }}
                                                 </a>
+
+                                                {{-- PDF: открыть inline --}}
                                                 @if($doc->isPdf())
                                                     <a href="{{ route('documentation.view', $doc) }}"
                                                        target="_blank"
                                                        class="text-xs font-medium text-gray-500 hover:text-gray-700 transition">
                                                         {{ __('Открыть') }}
+                                                    </a>
+                                                @endif
+
+                                                {{-- DOCX/XLSX: предпросмотр через Office Web Viewer --}}
+                                                @if($doc->isOfficeDocument())
+                                                    <a href="{{ route('documentation.preview', $doc) }}"
+                                                       target="_blank"
+                                                       class="text-xs font-medium text-gray-500 hover:text-gray-700 transition">
+                                                        {{ __('Посмотреть') }}
                                                     </a>
                                                 @endif
 
