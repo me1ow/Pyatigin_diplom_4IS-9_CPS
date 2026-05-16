@@ -30,12 +30,14 @@ class CourseController extends Controller
         $user = Auth::user();
 
         // ID курсов, с которыми пользователь уже взаимодействовал
+        // Используем JOIN вместо ленивой загрузки для предотвращения N+1
         $startedCourseIds = \App\Models\UserProgress::where('user_id', $user->id)
             ->whereHas('lesson.module.course')
-            ->get()
-            ->pluck('lesson.module.course.id')
-            ->unique()
-            ->values();
+            ->join('lessons', 'user_progress.lesson_id', '=', 'lessons.id')
+            ->join('modules', 'lessons.module_id', '=', 'modules.id')
+            ->select('modules.course_id')
+            ->distinct()
+            ->pluck('course_id');
 
         // Рекомендуем курсы, которые пользователь ещё не начинал
         $recommendedCourses = Course::with('competence')

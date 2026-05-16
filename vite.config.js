@@ -5,7 +5,16 @@ export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: false,
+            refresh: true,
         }),
     ],
+    build: {
+        minify: true,
+        cssMinify: true,
+        rollupOptions: {
+            output: {
+                manualChunks: undefined,
+            },
+        },
+    },
 });

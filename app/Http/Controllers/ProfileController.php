@@ -22,15 +22,17 @@ class ProfileController extends Controller
     {
         $currentUser = $request->user();
 
-        // Администратору передаём список всех пользователей для имперсонации
+        // Администратору передаём список пользователей для имперсонации (ограничиваем 50)
         $impersonatableUsers = $currentUser->isAdmin()
-            ? User::where('id', '!=', $currentUser->id)->orderBy('name')->get()
+            ? User::where('id', '!=', $currentUser->id)->orderBy('name')->take(50)->get()
             : collect();
 
-        // Для вкладки «Управление пользователями» админу отдаём всех, кроме себя
+        // Для вкладки «Управление пользователями» админу отдаём последних 50
+        // Таблица использует Alpine.js с динамической подгрузкой (fetchUsers)
         $allUsers = $currentUser->isAdmin()
             ? User::where('id', '!=', $currentUser->id)
                 ->orderBy('created_at', 'desc')
+                ->take(50)
                 ->get()
             : collect();
 

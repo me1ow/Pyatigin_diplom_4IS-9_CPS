@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CompetenceController;
 use App\Http\Controllers\CourseController;
@@ -18,7 +19,9 @@ use Illuminate\Support\Facades\Gate;
 
 // Корневая страница (гостевая / лендинг)
 Route::get('/', function () {
-    $competences = Competence::take(6)->get();
+    $competences = Cache::remember('welcome.competences', 3600, fn() =>
+        Competence::take(6)->get()
+    );
 
     $sections = [
         'bank'        => 'Банк заданий',
@@ -26,7 +29,9 @@ Route::get('/', function () {
         'schedules'   => 'Расписания',
     ];
 
-    $documents = Document::orderBy('title')->get()->groupBy('section');
+    $documents = Cache::remember('welcome.documents', 3600, fn() =>
+        Document::orderBy('title')->get()->groupBy('section')
+    );
 
     return view('welcome', compact('competences', 'sections', 'documents'));
 })->name('home');
