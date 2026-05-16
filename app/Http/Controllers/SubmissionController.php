@@ -37,4 +37,19 @@ class SubmissionController extends Controller
         $submissions = Auth::user()->submissions()->with('module.course')->latest()->get();
         return view('submissions.index', compact('submissions'));
     }
+
+    /**
+     * Скачивание файла задания через контроллер (не зависит от symlink).
+     */
+    public function download(Submission $submission)
+    {
+        // Извлекаем относительный путь из file_url (например, "/storage/submissions/xxx.zip" → "submissions/xxx.zip")
+        $relativePath = preg_replace('#^/storage/#', '', $submission->file_url);
+
+        if (!Storage::disk('public')->exists($relativePath)) {
+            abort(404, 'Файл не найден.');
+        }
+
+        return Storage::disk('public')->download($relativePath);
+    }
 }

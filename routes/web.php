@@ -10,12 +10,25 @@ use App\Http\Controllers\ExpertSubmissionController;
 use App\Http\Controllers\DocumentationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Models\Competence;
+use App\Models\Document;
+use Illuminate\Support\Facades\Gate;
 
 // ========== Публичные маршруты ==========
 
 // Корневая страница (гостевая / лендинг)
 Route::get('/', function () {
-    return view('welcome');
+    $competences = Competence::take(6)->get();
+
+    $sections = [
+        'bank'        => 'Банк заданий',
+        'regulations' => 'Положения',
+        'schedules'   => 'Расписания',
+    ];
+
+    $documents = Document::orderBy('title')->get()->groupBy('section');
+
+    return view('welcome', compact('competences', 'sections', 'documents'));
 })->name('home');
 
 // ========== Аутентифицированные маршруты ==========
@@ -49,6 +62,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['can:submission-manage'])->group(function () {
         Route::post('/modules/{module}/submit', [SubmissionController::class, 'store'])->name('submissions.store');
         Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
+        Route::get('/submissions/{submission}/download', [SubmissionController::class, 'download'])->name('submissions.download');
     });
 
     // Документация (все роли — просмотр, скачивание, открытие PDF)
@@ -84,6 +98,8 @@ Route::middleware(['auth', 'expert'])->prefix('expert')->name('expert.')->group(
         ->name('submissions.index');
     Route::put('/submissions/{submission}', [ExpertSubmissionController::class, 'update'])
         ->name('submissions.update');
+    Route::get('/submissions/{submission}/download', [SubmissionController::class, 'download'])
+        ->name('submissions.download');
 });
 
 // ========== Административные маршруты ==========

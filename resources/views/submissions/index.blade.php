@@ -17,6 +17,9 @@
                                     <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">Статус</th>
                                     <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">Дата</th>
                                     <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">Файл</th>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">Оценка</th>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">Комментарий студента</th>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">Комментарий эксперта</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -34,7 +37,16 @@
                                             @endif
                                         </td>
                                         <td class="px-6 py-4">{{ $submission->created_at->format('d.m.Y H:i') }}</td>
-                                        <td class="px-6 py-4"><a href="{{ $submission->file_url }}" target="_blank" class="text-indigo-600">Скачать</a></td>
+                                        <td class="px-6 py-4"><a href="{{ route('submissions.download', $submission) }}" class="text-indigo-600">Скачать</a></td>
+                                        <td class="px-6 py-4">
+                                            {{ $submission->grade !== null ? number_format($submission->grade, 2, ',', '') : '—' }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            {{ $submission->comment ?? '—' }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            {{ $submission->feedback ?? '—' }}
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

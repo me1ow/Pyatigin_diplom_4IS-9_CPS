@@ -16,7 +16,15 @@ class Submission extends Model
         'comment',
         'status',
         'feedback',
+        'grade',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'grade' => 'decimal:2',
+        ];
+    }
 
     // Связи
     public function user()

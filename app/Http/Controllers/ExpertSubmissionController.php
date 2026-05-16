@@ -33,11 +33,13 @@ class ExpertSubmissionController extends Controller
         $validated = $request->validate([
             'status'   => 'required|in:pending,approved,revision',
             'feedback' => 'nullable|string|max:2000',
+            'grade'    => 'nullable|numeric|min:0|max:999.99',
         ]);
 
         $submission->update([
             'status'   => $validated['status'],
             'feedback' => $validated['feedback'] ?? null,
+            'grade'    => $validated['grade'] ?? null,
         ]);
 
         return redirect()

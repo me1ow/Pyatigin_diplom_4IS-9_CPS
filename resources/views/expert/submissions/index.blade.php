@@ -39,6 +39,9 @@
                                     <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Статус') }}</th>
                                     <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Дата') }}</th>
                                     <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Файл') }}</th>
+                                    <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Оценка') }}</th>
+                                    <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Комментарий студента') }}</th>
+                                    <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Комментарий эксперта') }}</th>
                                     <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Действия') }}</th>
                                 </tr>
                             </thead>
@@ -62,13 +65,22 @@
                                         </td>
                                         <td class="px-4 py-4 text-sm text-gray-500">{{ $submission->created_at->format('d.m.Y H:i') }}</td>
                                         <td class="px-4 py-4 text-sm">
-                                            <a href="{{ $submission->file_url }}" target="_blank" class="text-indigo-600 hover:text-indigo-900">
+                                            <a href="{{ route('expert.submissions.download', $submission) }}" class="text-indigo-600 hover:text-indigo-900">
                                                 {{ __('Скачать') }}
                                             </a>
                                         </td>
                                         <td class="px-4 py-4 text-sm">
+                                            {{ $submission->grade !== null ? number_format($submission->grade, 2, ',', '') : '—' }}
+                                        </td>
+                                        <td class="px-4 py-4 text-sm text-gray-500">
+                                            {{ $submission->comment ?? '—' }}
+                                        </td>
+                                        <td class="px-4 py-4 text-sm text-gray-500">
+                                            {{ $submission->feedback ?? '—' }}
+                                        </td>
+                                        <td class="px-4 py-4 text-sm">
                                             <button type="button"
-                                                onclick="openReviewModal({{ $submission->id }}, '{{ $submission->status }}', '{{ addslashes($submission->feedback ?? '') }}')"
+                                                onclick="openReviewModal({{ $submission->id }}, '{{ $submission->status }}', '{{ addslashes($submission->feedback ?? '') }}', {{ $submission->grade !== null ? (float)$submission->grade : 'null' }})"
                                                 class="text-indigo-600 hover:text-indigo-900 font-medium">
                                                 {{ __('Оценить') }}
                                             </button>
@@ -106,6 +118,11 @@
                 </select>
             </div>
             <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Оценка') }}</label>
+                <input type="number" name="grade" id="reviewGrade" step="0.01" min="0" max="999.99"
+                    class="w-full rounded-md border-gray-300" placeholder="{{ __('Например: 5.0 или 4.5') }}">
+            </div>
+            <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Отзыв') }}</label>
                 <textarea name="feedback" id="reviewFeedback" rows="3" class="w-full rounded-md border-gray-300" placeholder="{{ __('Напишите комментарий...') }}"></textarea>
             </div>
@@ -123,11 +140,12 @@
 
 @push('scripts')
 <script>
-    function openReviewModal(id, status, feedback) {
+    function openReviewModal(id, status, feedback, grade) {
         const form = document.getElementById('reviewForm');
         form.action = '/expert/submissions/' + id;
         document.getElementById('reviewStatus').value = status;
         document.getElementById('reviewFeedback').value = feedback || '';
+        document.getElementById('reviewGrade').value = grade !== null ? grade : '';
         document.getElementById('reviewModal').classList.remove('hidden');
         document.getElementById('reviewModal').classList.add('flex');
     }
