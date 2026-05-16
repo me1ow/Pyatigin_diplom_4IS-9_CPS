@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
@@ -24,7 +24,7 @@ class DocumentationController extends Controller
 
         $documents = Document::orderBy('title')->get()->groupBy('section');
 
-        $canManage = Auth::user()->isAdmin() || Auth::user()->isExpert();
+        $canManage = Gate::allows('document-manage');
 
         return view('documentation.index', compact('sections', 'documents', 'canManage'));
     }

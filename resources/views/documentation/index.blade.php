@@ -125,7 +125,7 @@
                                                     </a>
                                                 @endif
 
-                                                {{-- DOCX/XLSX: предпросмотр через Office Web Viewer --}}
+                                                {{-- DOCX/XLSX: предпросмотр через Office Web Viewer 
                                                 @if($doc->isOfficeDocument())
                                                     <a href="{{ route('documentation.preview', $doc) }}"
                                                        target="_blank"
@@ -133,6 +133,7 @@
                                                         {{ __('Посмотреть') }}
                                                     </a>
                                                 @endif
+                                                --}}
 
                                                 {{-- Удаление (admin + expert) --}}
                                                 @if($canManage)
