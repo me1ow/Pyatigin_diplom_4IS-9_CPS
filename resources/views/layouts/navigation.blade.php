@@ -62,12 +62,10 @@
                             </x-nav-link>
                         @endif
 
-                        {{-- Документы (только admin) --}}
-                        @if(Auth::user()->isAdmin())
-                            <x-nav-link :href="route('documentation.index')" :active="request()->routeIs('documentation.*')">
-                                {{ __('Документы') }}
-                            </x-nav-link>
-                        @endif
+                        {{-- Документы (все роли) --}}
+                        <x-nav-link :href="route('documentation.index')" :active="request()->routeIs('documentation.*')">
+                            {{ __('Документы') }}
+                        </x-nav-link>
                     </div>
                 @endauth
 
@@ -171,12 +169,10 @@
                     </x-responsive-nav-link>
                 @endif
 
-                {{-- Документы (только admin) --}}
-                @if(Auth::user()->isAdmin())
-                    <x-responsive-nav-link :href="route('documentation.index')" :active="request()->routeIs('documentation.*')">
-                        {{ __('Документы') }}
-                    </x-responsive-nav-link>
-                @endif
+                {{-- Документы (все роли) --}}
+                <x-responsive-nav-link :href="route('documentation.index')" :active="request()->routeIs('documentation.*')">
+                    {{ __('Документы') }}
+                </x-responsive-nav-link>
             </div>
 
             {{-- Информация о пользователе --}}

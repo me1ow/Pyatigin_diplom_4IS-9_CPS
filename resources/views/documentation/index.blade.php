@@ -3,6 +3,64 @@
 @section('content')
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+        {{-- Flash-сообщения --}}
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-green-100 text-green-800 rounded-md shadow-sm">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="mb-6 p-4 bg-red-100 text-red-800 rounded-md shadow-sm">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        {{-- Форма загрузки (admin + expert) --}}
+        @if($canManage)
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-8">
+                <div class="p-6 text-gray-900">
+                    <h2 class="text-lg font-semibold mb-4">{{ __('Загрузить новый документ') }}</h2>
+                    <form method="POST" action="{{ route('documentation.store') }}" enctype="multipart/form-data" class="space-y-4">
+                        @csrf
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <x-input-label for="title" :value="__('Название')" />
+                                <x-text-input id="title" name="title" type="text" class="mt-1 block w-full"
+                                    :value="old('title')" required autofocus />
+                                <x-input-error :messages="$errors->get('title')" class="mt-2" />
+                            </div>
+                            <div>
+                                <x-input-label for="section" :value="__('Раздел')" />
+                                <select id="section" name="section"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="">{{ __('Выберите раздел...') }}</option>
+                                    <option value="bank" @selected(old('section') === 'bank')>{{ __('Банк заданий') }}</option>
+                                    <option value="regulations" @selected(old('section') === 'regulations')>{{ __('Положения') }}</option>
+                                    <option value="schedules" @selected(old('section') === 'schedules')>{{ __('Расписания') }}</option>
+                                </select>
+                                <x-input-error :messages="$errors->get('section')" class="mt-2" />
+                            </div>
+                            <div>
+                                <x-input-label for="file" :value="__('Файл (PDF, DOCX, XLSX, до 50 МБ)')" />
+                                <input id="file" name="file" type="file" accept=".pdf,.docx,.xlsx"
+                                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                                    required />
+                                <x-input-error :messages="$errors->get('file')" class="mt-2" />
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit"
+                                class="px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition">
+                                {{ __('Загрузить') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
+
+        {{-- Список документов --}}
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900">
                 <h1 class="text-2xl font-bold mb-8">{{ __('Документы') }}</h1>
@@ -17,6 +75,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 @foreach($documents[$sectionKey] as $doc)
                                     <div class="flex items-start gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition group">
+
                                         {{-- Иконка типа файла --}}
                                         <div class="shrink-0 mt-0.5">
                                             @if($doc->isPdf())
@@ -51,7 +110,7 @@
                                             </p>
 
                                             {{-- Кнопки действий --}}
-                                            <div class="flex gap-3 mt-2">
+                                            <div class="flex items-center gap-3 mt-2">
                                                 <a href="{{ route('documentation.download', $doc) }}"
                                                    class="text-xs font-medium text-indigo-600 hover:text-indigo-800 transition">
                                                     {{ __('Скачать') }}
@@ -62,6 +121,20 @@
                                                        class="text-xs font-medium text-gray-500 hover:text-gray-700 transition">
                                                         {{ __('Открыть') }}
                                                     </a>
+                                                @endif
+
+                                                {{-- Удаление (admin + expert) --}}
+                                                @if($canManage)
+                                                    <form method="POST" action="{{ route('documentation.destroy', $doc) }}"
+                                                        onsubmit="return confirm('{{ __('Удалить документ «') . $doc->title . __('»? Это действие нельзя отменить.') }}')"
+                                                        class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="text-xs font-medium text-red-500 hover:text-red-700 transition">
+                                                            {{ __('Удалить') }}
+                                                        </button>
+                                                    </form>
                                                 @endif
                                             </div>
                                         </div>

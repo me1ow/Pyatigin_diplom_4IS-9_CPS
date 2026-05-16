@@ -50,6 +50,21 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/modules/{module}/submit', [SubmissionController::class, 'store'])->name('submissions.store');
         Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
     });
+
+    // Документация (все роли — просмотр, скачивание, открытие PDF)
+    Route::get('/documentation', [DocumentationController::class, 'index'])->name('documentation.index');
+    Route::get('/documentation/{document}/download', [DocumentationController::class, 'download'])
+        ->name('documentation.download');
+    Route::get('/documentation/{document}/view', [DocumentationController::class, 'view'])
+        ->name('documentation.view');
+
+    // Загрузка и удаление документов (admin + expert)
+    Route::post('/documentation', [DocumentationController::class, 'store'])
+        ->middleware('can:document-manage')
+        ->name('documentation.store');
+    Route::delete('/documentation/{document}', [DocumentationController::class, 'destroy'])
+        ->middleware('can:document-manage')
+        ->name('documentation.destroy');
 });
 
 // ========== Маршруты эксперта (expert + admin) ==========
@@ -79,13 +94,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/admin/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('admin.users.role');
     Route::patch('/admin/users/{user}/block', [AdminUserController::class, 'toggleBlock'])->name('admin.users.block');
     Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
-
-    // Документация (только admin)
-    Route::get('/documentation', [DocumentationController::class, 'index'])->name('documentation.index');
-    Route::get('/documentation/{document}/download', [DocumentationController::class, 'download'])
-        ->name('documentation.download');
-    Route::get('/documentation/{document}/view', [DocumentationController::class, 'view'])
-        ->name('documentation.view');
 });
 
 // ========== Аутентификация (Breeze) ==========

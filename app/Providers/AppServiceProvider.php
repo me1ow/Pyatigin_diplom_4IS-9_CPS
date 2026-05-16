@@ -24,5 +24,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('submission-manage', function ($user) {
             return in_array($user->role, ['user', 'admin']);
         });
+
+        // Gate для управления документами — загрузка и удаление (admin, expert)
+        Gate::define('document-manage', function ($user) {
+            return in_array($user->role, ['admin', 'expert']);
+        });
     }
 }
