@@ -27,7 +27,7 @@
                     <div class="p-6 bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-lg shadow-sm hover:shadow-md transition-shadow">
                         <div class="flex items-center mb-3">
                             {{--<span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-indigo-600 text-white font-bold text-lg">2</span>--}}
-                            <h3 class="ml-3 text-lg font-bold text-gray-800">299 компетенций</h3>
+                            <h3 class="ml-3 text-lg font-bold text-gray-800">408 компетенций</h3>
                         </div>
                         <p class="text-gray-600 leading-relaxed">
                             Производство и инженерные технологии, сельское хозяйство и аграрные технологии, строительство и строительные технологии и другие — принять участие сможет каждый профессионал.

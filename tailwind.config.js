@@ -12,7 +12,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Raleway', ...defaultTheme.fontFamily.sans],
+                sans: ['Geologica', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 indigo: {
