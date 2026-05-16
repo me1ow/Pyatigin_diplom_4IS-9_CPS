@@ -13,7 +13,7 @@ class ExpertSubmissionController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Submission::with(['user', 'module.course'])->latest();
+        $query = Submission::with(['user', 'module.competence'])->latest();
 
         // Фильтр по статусу
         if ($request->filled('status')) {

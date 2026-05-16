@@ -15,11 +15,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Сидим компетенции и модули
+        $this->call(CompetenceSeeder::class);
 
+        // Создаём тестового пользователя
         User::factory()->create([
-            'name' => 'Test User',
+            'name'  => 'Test User',
             'email' => 'test@example.com',
+            'role'  => 'user',
+        ]);
+
+        // Создаём админа
+        User::factory()->create([
+            'name'  => 'Admin',
+            'email' => 'admin@example.com',
+            'role'  => 'admin',
+        ]);
+
+        // Создаём эксперта
+        User::factory()->create([
+            'name'  => 'Expert',
+            'email' => 'expert@example.com',
+            'role'  => 'expert',
         ]);
     }
 }

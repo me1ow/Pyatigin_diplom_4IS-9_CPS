@@ -34,7 +34,7 @@
                             <thead>
                                 <tr>
                                     <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Студент') }}</th>
-                                    <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Курс') }}</th>
+                                    <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Компетенция') }}</th>
                                     <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Модуль') }}</th>
                                     <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Статус') }}</th>
                                     <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase">{{ __('Дата') }}</th>
@@ -52,7 +52,7 @@
                                             <div class="font-medium text-gray-900">{{ $submission->user->name }}</div>
                                             <div class="text-gray-500">{{ $submission->user->email }}</div>
                                         </td>
-                                        <td class="px-4 py-4 text-sm">{{ $submission->module->course->title }}</td>
+                                        <td class="px-4 py-4 text-sm">{{ $submission->module->competence?->title ?? '—' }}</td>
                                         <td class="px-4 py-4 text-sm">{{ $submission->module->title }}</td>
                                         <td class="px-4 py-4 text-sm">
                                             @if($submission->status == 'pending')

@@ -46,17 +46,34 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Компетенции (все роли)
+    // Компетенции (просмотр для всех ролей)
     Route::get('/competences', [CompetenceController::class, 'index'])->name('competences.index');
-    Route::get('/competences/{competence}', [CompetenceController::class, 'show'])->name('competences.show');
+    Route::get('/competences/{competence:slug}', [CompetenceController::class, 'show'])->name('competences.show');
 
-    // Рекомендации курсов (должен быть ДО /courses/{course})
-    Route::get('/courses/recommendations', [CourseController::class, 'recommendations'])->name('courses.recommendations');
-    // Курсы
-    Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
+    // CRUD компетенций (admin + expert)
+    Route::post('/competences', [CompetenceController::class, 'store'])
+        ->middleware('can:competence-manage')
+        ->name('competences.store');
+    Route::put('/competences/{competence:slug}', [CompetenceController::class, 'update'])
+        ->middleware('can:competence-manage')
+        ->name('competences.update');
+    Route::delete('/competences/{competence:slug}', [CompetenceController::class, 'destroy'])
+        ->middleware('can:competence-manage')
+        ->name('competences.destroy');
 
-    // Модули
-    Route::get('/modules/{module}', [ModuleController::class, 'show'])->name('modules.show');
+    // Модули (просмотр)
+    Route::get('/modules/{module:slug}', [ModuleController::class, 'show'])->name('modules.show');
+
+    // CRUD модулей (admin + expert)
+    Route::post('/modules', [ModuleController::class, 'store'])
+        ->middleware('can:module-manage')
+        ->name('modules.store');
+    Route::put('/modules/{module:slug}', [ModuleController::class, 'update'])
+        ->middleware('can:module-manage')
+        ->name('modules.update');
+    Route::delete('/modules/{module:slug}', [ModuleController::class, 'destroy'])
+        ->middleware('can:module-manage')
+        ->name('modules.destroy');
 
     // Отправка заданий (user + admin)
     Route::middleware(['can:submission-manage'])->group(function () {
@@ -83,6 +100,16 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/documentation/{document}', [DocumentationController::class, 'destroy'])
         ->middleware('can:document-manage')
         ->name('documentation.destroy');
+
+    // Редирект со старых URL курсов на модули (если есть пересечения)
+    Route::get('/courses/recommendations', function () {
+        return redirect()->route('competences.index')
+            ->with('info', 'Рекомендации теперь доступны в каталоге компетенций.');
+    })->name('courses.recommendations');
+    Route::get('/courses/{course}', function () {
+        return redirect()->route('competences.index')
+            ->with('info', 'Страница курса больше не используется. Перейдите к модулям напрямую.');
+    })->name('courses.show');
 });
 
 // ========== Signed-маршруты (без auth, только временная подпись) ==========

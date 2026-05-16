@@ -29,5 +29,15 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('document-manage', function ($user) {
             return in_array($user->role, ['admin', 'expert']);
         });
+
+        // Gate для управления компетенциями (admin, expert)
+        Gate::define('competence-manage', function ($user) {
+            return in_array($user->role, ['admin', 'expert']);
+        });
+
+        // Gate для управления модулями (admin, expert)
+        Gate::define('module-manage', function ($user) {
+            return in_array($user->role, ['admin', 'expert']);
+        });
     }
 }

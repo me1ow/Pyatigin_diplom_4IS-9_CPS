@@ -12,16 +12,26 @@ class Module extends Model
     use HasFactory;
 
     protected $fillable = [
-        'course_id',
+        'competence_id',
         'title',
+        'slug',
+        'description',
         'order',
         'content',
     ];
 
-    // Связи
-    public function course(): BelongsTo
+    /**
+     * Маршрутизация по slug вместо id.
+     */
+    public function getRouteKeyName(): string
     {
-        return $this->belongsTo(Course::class);
+        return 'slug';
+    }
+
+    // Связи
+    public function competence(): BelongsTo
+    {
+        return $this->belongsTo(Competence::class);
     }
 
     public function submissions(): HasMany

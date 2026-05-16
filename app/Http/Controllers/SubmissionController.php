@@ -34,7 +34,7 @@ class SubmissionController extends Controller
 
     public function index()
     {
-        $submissions = Auth::user()->submissions()->with('module.course')->latest()->get();
+        $submissions = Auth::user()->submissions()->with('module.competence')->latest()->get();
         return view('submissions.index', compact('submissions'));
     }
 

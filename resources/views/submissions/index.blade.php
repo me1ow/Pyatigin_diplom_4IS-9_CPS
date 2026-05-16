@@ -25,7 +25,7 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($submissions as $submission)
                                     <tr>
-                                        <td class="px-6 py-4">{{ $submission->module->course->title }}</td>
+                                        <td class="px-6 py-4">{{ $submission->module->competence?->title ?? '—' }}</td>
                                         <td class="px-6 py-4">{{ $submission->module->title }}</td>
                                         <td class="px-6 py-4">
                                             @if($submission->status == 'pending')
